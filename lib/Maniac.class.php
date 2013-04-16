@@ -14,7 +14,7 @@ class Maniac{
     
 
     /*
-    * Типа пока контроллер
+    * Контроллер
     */
     private function __construct(){
         if (isset($_SESSION['user_login']) && isset($_SESSION['user_pass']) ) {
