@@ -13,9 +13,9 @@
 
 </head>
 <body>
-<h1>@Diary Maniac</h1>
+<h3>Ошибка</h3>
+<p style="color: #f00"><?=$maniac->error;?></p>
 
-<?php include $userinfo_tpl ?>
 
 </body>
 

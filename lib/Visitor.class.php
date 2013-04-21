@@ -13,7 +13,7 @@ class Visitor {
     	$this->sock = fsockopen($this->host, 80, $sock_errno, $sock_errmsg, 30);
 
     
-    	echo self::get_userprofile_url();
+    	//$fav = self::get_fav();
     }
 
     public function diary_post() {
@@ -39,7 +39,8 @@ class Visitor {
     /* 
     * Получить содержимое
     */
-	public function diary_get() {
+	public function diary_get($get_str="/") {
+		$host = $this->host;
 		$getdata = "";
 		$diary_to = "~bukreja";
 		//$getdata = $diary_to;
@@ -47,8 +48,8 @@ class Visitor {
 		//$getdata .= "order=frombegin";
 
 
-		$out = "GET / HTTP/1.1\r\n";
-		$out .= "Host: m.diary.ru\r\n";
+		$out = "GET $get_str HTTP/1.1\r\n";
+		$out .= "Host: $host\r\n";
 		$out .= "Cookie:user_login=" . $this->user_login . "; user_pass=" . $this->user_pass . ";\r\n";
 		$out .= "\r\n\r\n";
 
@@ -68,7 +69,7 @@ class Visitor {
 	}
 
 
-	public function get_headers() {
+	public function get_headers($get_str="/") {
 		$content = $this->diary_get();
 
 		$headers = trim(mb_substr($content, 0, stripos($content, "<!DOC")));
@@ -76,18 +77,23 @@ class Visitor {
 
 	}
 
-	public function get_body() {
+	public function get_body($get_str="/") {
 		//header("Content-Type: text/html; charset=utf-8");
 
-		$content = $this->diary_get();
+		$content = $this->diary_get($get_str);
 
-		
 		$html_str = mb_substr($content, stripos($content, "<body"));
 		$html_str = mb_substr($html_str, 0, stripos($html_str, "/body")+6);
 		$html_str = iconv("Windows-1251", "UTF-8", $html_str);
 
-		return $html_str;
+		$html_str = "<html>"
+					."<head>"
+					.'<meta http-equiv="content-type" content="text/html; charset=utf-8" />'
+					."</head>"
+					.$html_str
+					."</html>";
 
+		return $html_str;
 	}
 
 	public function get_userprofile_url() {
@@ -98,17 +104,61 @@ class Visitor {
 		$el = $dom->getElementById('shapka');
 		//$no = $el->childNodes;
 		$nl = $el->getElementsByTagName("a");
-
-		$member_url = $nl->item(3)->getAttribute('href');
-
+	
+		if ($nl->length >= 3+1) { 
+			$el = $nl->item(3);
+		}
+		else
+			return false;
+		
+		
+		$member_url = $el->getAttribute('href');
+		
 		return $member_url;
+	}
+
+
+	public function get_fav() {
+		$favs = Array();
+		$dom = new DOMDocument("1.0", "utf-8");
+		if (!$this->get_userprofile_url())
+			return $favs;
+
+		
+		$html = $this->get_body( $this->get_userprofile_url() );
+		
+		@$dom->loadHTML($html);
+
+		$el = $dom->getElementById('content');
+
+		$nl = $el->getElementsByTagName("p");
+
+		//$nl = $nl->item(6)->ChildNodes;
+		$nl = $nl->item(6)->childNodes; 
+		foreach ($nl as $i=>$n) {
+			//noindex
+			if ($i == 0)
+				continue;
+
+			if($n->firstChild->nodeName == "a")
+				$favs[$n->nodeValue] = $n->firstChild->getAttribute('href');
+		}
+
+		return $favs;
+
 	}
 
 }
 
 
 
+/*foreach ($res as $i=>$p) {
+	echo $i; echo "<br>";
+	 echo $p->nodeValue, PHP_EOL;
+	 echo "<br>";
+}*/
 
+//echo "<br>";
 
 
 ?>

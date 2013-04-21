@@ -17,16 +17,26 @@ $visitor = new Visitor($maniac);
 
 
 // VIEW
-if (!$maniac->login) {
-	$userinfo_tpl = "tpl/form_user_login.tpl.php";
+if ($maniac->error !== 0) {
+ 	$main_tpl = "error.tpl.php";
 }
+
 else {
-	$userinfo_tpl = "tpl/user_login.tpl.php";
+	if (!$maniac->login) {
+		$userinfo_tpl = "tpl/form_user_login.tpl.php";
+	}
+	else {
+		$userinfo_tpl = "tpl/user_login.tpl.php";
+	}
+	$main_tpl = "index.tpl.php";
+
+	$favorites = $visitor->get_fav();
 }
 
 
 
-include "tpl/index.tpl.php";
+
+include "tpl/".$main_tpl;
 
 
 
