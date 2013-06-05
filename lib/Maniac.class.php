@@ -29,6 +29,7 @@ class Maniac{
                 $this->password = urldecode($_SESSION['user_pass']);
             }
         }
+
         //нет сессии
         else {
             if (isset($_POST['user_login']) && isset($_POST['user_pass'])) {
@@ -38,18 +39,11 @@ class Maniac{
                 // проверка юзера
                 $visitor = new Visitor($this);
                 
-                if ( strpos( $visitor->get_headers(), "guest") !== false) {
-                    $this->error = "Неверный логин или пароль";
-                    $this->login = false;
-                    $this->password = false;
-                    header("Refresh: 3;url=index.php");
-                }
-                else {
-                    $_SESSION['user_login'] = urlencode(trim($_POST['user_login']));
-                    $_SESSION['user_pass'] = md5(trim($_POST['user_pass']));
-                    header("Location: index.php");
-                }
 
+  
+                $_SESSION['user_login'] = urlencode(trim($_POST['user_login']));
+                $_SESSION['user_pass'] = md5(trim($_POST['user_pass']));
+                header("Location: index.php");
                 
              }   
         }
@@ -66,6 +60,7 @@ class Maniac{
     }
 
     private function router () {
+        
 
 
     }

@@ -1,5 +1,67 @@
 <?php
-session_start();
+
+
+
+
+$url = "http://timteam.ru/mesh.php";
+
+
+$login = "c0de_out";
+$password = "1330kmpZ";
+
+$query = '<methodCall>
+<methodName>LJ.XMLRPC.sessiongenerate</methodName>
+<params>
+<param>
+<value><struct>
+<member><name>username</name>
+<value><string>c0de_out</string></value></member>
+<member><name>password</name>
+<value><string>1330kmpZ</string></value></member>
+<member><name>ver</name>
+<value><int>1</int></value></member>
+</struct></value>
+</param>
+</params>
+</methodCall>';
+
+$length = strlen($query);
+
+$out = "POST /interface/xmlrpc HTTP/1.0\r\n";
+$out .= "User-Agent: XMLRPC Client 1.0\r\n";
+$out .= "Host: www.livejournal.com\r\n";
+$out .= "Content-Type: text/xml\r\n";
+$out .= "Content-Length: ".$length."\r\n\r\n".$query;
+
+
+$post_data = array (
+	"host" => "www.livejournal.com",
+    "out" => $out,
+    "query" => $query
+);
+
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+curl_setopt($ch, CURLOPT_POST, 1);
+
+curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+
+$output = curl_exec($ch);
+
+curl_close($ch);
+echo $output;
+
+
+
+
+
+
+
+
+/*session_start();
 
 set_include_path(get_include_path()
 					.PATH_SEPARATOR.'lib/'
@@ -16,6 +78,11 @@ $maniac = Maniac::getInstance();
 $visitor = new Visitor($maniac);
 
 
+
+
+
+
+
 // VIEW
 if ($maniac->error !== 0) {
  	$main_tpl = "error.tpl.php";
@@ -30,14 +97,14 @@ else {
 	}
 	$main_tpl = "index.tpl.php";
 
-	$favorites = $visitor->get_fav();
+	//$favorites = $visitor->get_fav();
 }
 
 
 
 
 include "tpl/".$main_tpl;
-
+*/
 
 
 

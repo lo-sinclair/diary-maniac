@@ -7,8 +7,12 @@
 
 <h3>Мои избранные</h3>
 
-<?php foreach($favorites as $name=>$link): ?>
 
-	<a href=""><?=$name?></a>
 
-<?php endforeach; ?>
+<?php if (isset($favorites)): ?>
+	<?php foreach($favorites as $name=>$link): ?>
+		<a href="<?=$link?>"><?=$name?></a>
+	<?php endforeach; ?>
+
+<?php endif; ?>
+
