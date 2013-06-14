@@ -7,7 +7,7 @@ class Visitor {
 	public function __construct(Maniac $maniac){
 
 		$lj = new Livejournal($maniac);
-		$lj->diary_get();
+		$lj->query();
 
 		/*$this->user_login = urlencode($maniac->login);
 		$this->user_pass = $maniac->password;
