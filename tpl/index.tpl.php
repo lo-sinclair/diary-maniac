@@ -15,6 +15,12 @@
 <body>
 <h1>@Diary Maniac</h1>
 
+<?php if ($maniac->error): ?>
+	<h3>Ошибка</h3>
+	<p style="color: #f00"><?=$maniac->error;?></p>
+<?php endif; ?>
+
+
 <?php include $userinfo_tpl ?>
 
 </body>

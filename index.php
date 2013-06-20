@@ -1,7 +1,4 @@
 <?php
-
-
-
 session_start();
 
 set_include_path(get_include_path()
@@ -12,7 +9,8 @@ function __autoload($class){
 	require_once($class.'.class.php');
 }
 
-
+set_error_handler('Error::handler', E_ALL);
+ 
 
 $maniac = Maniac::getInstance();
 
@@ -23,13 +21,11 @@ $visitor = new Visitor($maniac);
 
 
 
+//print_r (E_USER_ERROR);
 
 // VIEW
-if ($maniac->error !== 0) {
- 	$main_tpl = "error.tpl.php";
-}
 
-else {
+	
 	if (!$maniac->login) {
 		$userinfo_tpl = "tpl/form_user_login.tpl.php";
 	}
@@ -38,10 +34,9 @@ else {
 	}
 	$main_tpl = "index.tpl.php";
 
-	//$favorites = $visitor->get_fav();
-}
+	$favorites = $visitor->get_fav();
 
-
+echo $maniac->error;
 
 
 include "tpl/".$main_tpl;

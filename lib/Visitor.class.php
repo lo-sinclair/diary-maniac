@@ -2,12 +2,11 @@
 
 class Visitor {
 
-
+	private $visitor;
 
 	public function __construct(Maniac $maniac){
 
-		$lj = new Livejournal($maniac);
-		$lj->query();
+		$this->visitor = new Livejournal($maniac);
 
 		/*$this->user_login = urlencode($maniac->login);
 		$this->user_pass = $maniac->password;
@@ -18,6 +17,12 @@ class Visitor {
 
     }
 
+    public function get_fav() { 
+		return $this->visitor->get_fav();
+	}
+	public function login_error() { 
+		return $this->visitor->login_error();
+	}
 }    
 
 
