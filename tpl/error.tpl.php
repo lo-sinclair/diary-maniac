@@ -14,7 +14,7 @@
 </head>
 <body>
 <h3>Ошибка</h3>
-<p style="color: #f00"><?=$maniac->error;?></p>
+<p style="color: #f00"><?=$error;?></p>
 
 
 </body>

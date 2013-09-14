@@ -1,28 +1,51 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-    <title>@Diary Maniac</title>
-    <meta name="description" content="Онлайн скрипт для дайри-маньяка" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <meta http-equiv="content-type" content="text/html; charset=windows-1251" />
-    <!-- <link title="Стандарт" media="all" type="text/css" href="http://static.diary.ru/style/pda.css" rel="stylesheet"> -->
-    
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<h3><?=$login?></h3>
 
-	<link rel="stylesheet" type="text/css" href="" />
+<form method="post" action="index.php">
+	<input type="hidden" name="logout">
+	<input type="submit" class="submit" value="Выйти">
+</form>
 
-</head>
-<body>
-<h1>@Diary Maniac</h1>
+<h3>Любое ID юзера</h3>
 
-<?php if ($maniac->error): ?>
-	<h3>Ошибка</h3>
-	<p style="color: #f00"><?=$maniac->error;?></p>
+<form method="get" action="<?=BASE_URL?>/archive">
+	<p>ID юзера: <input type="text" name="userid"> 
+	<input type="submit" value="GET"></p>
+</form>
+
+<p class="ac">OR:</p>
+<?php if ($favorites): ?>
+	<h3>Мои избранные</h3>
+	<table class="favs" border="0">
+	<?php foreach($favorites as $i=>$user): ?>
+	 	<tr class="<?php echo ($i+1)%2==0 ? 'even' : 'odd'?>">
+			<td class="col-1"><a href="archive/?userid=<?=$user['id']?>"><?=$user['name']?></a></td>
+			<td>
+				<?php if ($user['last_update']): ?>
+				<a href="archive/?userid=<?=$user['id']?>">сделать архив [<?=date('Y.m.d - h:m:s',$user['last_update'])?>]</a>
+				<?php else: ?>
+				недоступно
+				<?php endif; ?>
+			</td>
+		</tr>
+	<?php endforeach; ?>
+	</table>
 <?php endif; ?>
 
 
-<?php include $userinfo_tpl ?>
-
-</body>
-
-</html>
+<?php if (!empty($readers)): ?>
+	<h3>Мои постоянные читатели</h3>
+	<table class="favs" border="0">
+	<?php foreach($readers as $i=>$user): ?>
+	 	<tr class="<?php echo ($i+1)%2==0 ? 'even' : 'odd'?>">
+			<td class="col-1"><a href="archive/?userid=<?=$user['id']?>"><?=$user['name']?></a></td>
+			<td>
+				<?php if ($user['last_update']): ?>
+				<a href="archive/?userid=<?=$user['id']?>">сделать архив [<?=date('Y.m.d - h:m:s',$user['last_update'])?>]</a>
+				<?php else: ?>
+				недоступно
+				<?php endif; ?>
+			</td>
+		</tr>
+	<?php endforeach; ?>
+	</table>
+<?php endif; ?>

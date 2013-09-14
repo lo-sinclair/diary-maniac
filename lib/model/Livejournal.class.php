@@ -88,7 +88,7 @@ class Livejournal {
 	private function lg_sessiongenerate() {
 		$params = Array();
 
-		$query = $this->build_method_query('sessiongenerate');
+		$query = $this->build_methodCall_query('sessiongenerate');
 		$xml = $this->query($query);
 
 		//print_r($xml);
@@ -140,15 +140,16 @@ class Livejournal {
 
 		$params = Array();
 
-		$query = $this->build_method_query('getfriends');
+		$query = $this->build_methodCall_query('getfriends');
 		$xml = $this->query($query);
-		
+
+
+
 		if($er = $this->check_fault($xml)) {
 			trigger_error($er['string'], E_USER_ERROR);
+			return false;
 		}
 
-
-		//print_r($xml);
 		$friends =  $xml->Xpath("//name[text() = 'friends']/parent::*/value/array/data/value/struct");		
 		$result = Array();
 		
@@ -162,19 +163,19 @@ class Livejournal {
 	}
 
 	private function check_fault($xml) {
-		if($xml) {
-			$fault = $xml->Xpath("//fault");
+		
+		$fault = $xml->Xpath("//fault");
 
-			if (isset($fault)) {
-				$faultCode = $xml->Xpath("//name[text() = 'faultCode']/parent::*/value/int");
-				$faultString = $xml->Xpath("//name[text() = 'faultString']/parent::*/value/string");
-				
-				return Array (	'code' => (string)$faultCode[0],
-								'string' => (string)$faultString[0]
-							 );
+		if (count($fault)>0) {
+			$faultCode = $xml->Xpath("//name[text() = 'faultCode']/parent::*/value/int");
+			$faultString = $xml->Xpath("//name[text() = 'faultString']/parent::*/value/string");
+			
+			return Array (	'code' => (string)$faultCode[0],
+							'string' => (string)$faultString[0]
+						 );
 
-			}
 		}
+		
 		
 		return false;
 	}
@@ -206,7 +207,7 @@ class Livejournal {
 						    'value' => 'unix'
 						  );
 
-		$query = $this->build_method_query('getevents', $params);
+		$query = $this->build_methodCall_query('getevents', $params);
 
 		$xml = $this->query($query);
 		//print_r($xml);
@@ -229,12 +230,15 @@ class Livejournal {
 
 
 	public function get_fav() { 
-		$favs = $this->lj_getfriends();
-		$result = Array();
-		foreach ($favs as $i => $fav) {
-			$result[$fav['username']] = 'http://'.$fav['username'].'.livejournal.com';
+		if ($favs = $this->lj_getfriends()) {
+			$result = Array();
+			foreach ($favs as $i => $fav) {
+				$result[$fav['username']] = 'http://'.$fav['username'].'.livejournal.com';
+			}
+			return $result;
 		}
-		return $result;
+
+		return false;
 	}
 
 	public function get_headers($out) {
@@ -256,7 +260,7 @@ class Livejournal {
 	 * @param bulian $auth 
 	 * @return string Строка запроса
 	 */
-	private function build_method_query($method, $params = Array(), $auth = true) { 
+	private function build_methodCall_query($method, $params = Array(), $auth = true) { 
 		$auth_params = $auth ? $this->auth_params : "";
 		$all_params = "";
 

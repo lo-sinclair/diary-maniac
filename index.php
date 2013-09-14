@@ -1,109 +1,36 @@
 <?php
-session_start();
+try {
+	session_start();
 
-set_include_path(get_include_path()
-					.PATH_SEPARATOR.'lib/'
-					.PATH_SEPARATOR.'lib/view/');
+	set_include_path(get_include_path()
+						.PATH_SEPARATOR.'lib/'
+						.PATH_SEPARATOR.'lib/interface/'
+						.PATH_SEPARATOR.'lib/controllers/'
+						.PATH_SEPARATOR.'lib/model/');
 
-function __autoload($class){
-	require_once($class.'.class.php');
-}
-
-set_error_handler('Error::handler', E_ALL);
- 
-
-$maniac = Maniac::getInstance();
-
-$visitor = new Visitor($maniac);
-
-
-
-
-
-
-//print_r (E_USER_ERROR);
-
-// VIEW
-
-	
-	if (!$maniac->login) {
-		$userinfo_tpl = "tpl/form_user_login.tpl.php";
+	function __autoload($class){
+		require_once($class.'.class.php');
 	}
-	else {
-		$userinfo_tpl = "tpl/user_login.tpl.php";
-	}
-	$main_tpl = "index.tpl.php";
-
-	$favorites = $visitor->get_fav();
-
-echo $maniac->error;
 
 
-include "tpl/".$main_tpl;
+	/*unset($_SESSION['user_login']);
+	unset($_SESSION['user_pass']);
+	unset($_SESSION['sid']);
+	exit();*/
 
 
+	define ('BASE_URL', dirname($_SERVER["SCRIPT_NAME"]));
+	define ('TEMPLATE_DIR', 'tpl');
 
-
-
-
-
-
-
-
-
-
-
-
-
-/*$post_data = "user_login=loise&user_pass=kmpzkmpz";
-$out = "POST / HTTP/1.1\r\n";
-$out .= "Host:www.diary.ru\r\n";
-$out .= "Content-Type:application/x-www-form-urlencoded\r\n";
-$out .= "Content-Length:".strlen($post_data)."\r\n\r\n";
-$out .= $post_data;
-
-fwrite($sock, $out);
-
-$content = "";
-$piece = "";
-
-while ( strpos($piece, "</body>") === false && !feof($sock)) {
-	$piece = fgets($sock, 1000);
-	$content .= $piece;
+	//set_error_handler('Error::handler', E_ALL);
 	 
-}*/
+	$maniac = Maniac::getInstance();
+	$maniac->router();
+	echo $maniac->getBody();
 
-
-
-
-
-
-
-
-
-
-
-
-
-/*foreach ($nl as $a) {
-	print_r($k);
-	print_r( $a->getAttribute('href') );
-
-}*/
-
-//print_r ($no->item(4)->getAttribute('href'));
-
-
-
-
-
-//echo stripos($content, "/body>", stripos($content, "<body"));
-
-
-
-
-
-
+} catch (Exception $e) {
+	echo $e->getMessage();
+}
 
 
 ?>
