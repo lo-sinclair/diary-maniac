@@ -25,6 +25,15 @@ class ArchiveController extends Page implements IController {
 		$view->build_page($regions);
 	}
 
+	public function getentrieAction() {
+		$maniac = Maniac::getInstance();
+		$params = $maniac->getParams();
+
+		$view = new View();
+		$regions = Array('content'=>$this->getentrieContent());	
+		$view->build_page($regions);
+	}
+
 
 	public function getinfoContent() {
 		$maniac = Maniac::getInstance();
@@ -75,6 +84,25 @@ class ArchiveController extends Page implements IController {
 		$region = $view->render('elements/entries.tpl.php', $vars_c);
 	
 		return $region;
+	}
+
+	public function getentrieContent() {
+		$maniac = Maniac::getInstance();
+		$params = $maniac->getParams();
+
+		$view = new View();
+		$vars_c = Array();
+
+		$entrie = Array();
+		$comments = Array();
+
+		if ($params['postid']){
+			$entrie['id'] = $params['postid'];
+			$comments = $maniac->blog->get_comments($entrie['id']);
+		}
+		else {
+			$maniac->error = "Не указан ID записи";
+		}
 	}
 
 }

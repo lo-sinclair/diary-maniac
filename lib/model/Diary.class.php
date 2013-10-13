@@ -66,7 +66,7 @@ class Diary extends Blog {
 
     	$result =  $this->query('user.auth', $params);
     	if($result->result>0){
-    		Error::handler(E_USER_ERROR, $result->error);
+            $maniac->error = $result->error;
             $maniac->login = NULL;
             $maniac->password = NULL;
     		return false;
@@ -83,35 +83,32 @@ class Diary extends Blog {
     public function get_fav_readers($f=1, $r=1) { 
 
         $params = Array('sid' => $this->get_sid(),
-                        'fields' => 'fav,readers');
+                        'fields' => 'favs2,readers2');
         $result =  $this->query('user.get', $params);
 
-  
         $favs = Array();
-        if(!empty($result->user->fav)) {
-            foreach ($result->user->fav as $id) {
+        if(!empty($result->user->favs2)) {
+            foreach ($result->user->favs2 as $id=>$name) {
                 $user = Array();
-                if($name = $this->get_username($id)) {
-                    $user['id'] = $id;
-                    $user['name'] = $name;
-                    $last_update = $this->get_last_update($id);
-                    $user['last_update'] = !empty($last_update) ? $last_update : NULL;
-                    $favs[] = $user;
-                }
+                $user['id'] = $id;
+                $user['name'] = $name;
+                //$last_update = $this->get_last_update($id);
+                $last_update = "00";
+                $user['last_update'] = !empty($last_update) ? $last_update : NULL;
+                $favs[] = $user;
             } 
         }
 
         $readers = Array();
-        if(!empty($result->user->readers)) {
-            foreach ($result->user->readers as $id) {
+        if(!empty($result->user->readers2)) {
+            foreach ($result->user->readers2 as $id=>$name) {
                 $user = Array();
-                if($name = $this->get_username($id)) {
-                    $user['id'] = $id;
-                    $user['name'] = $name;
-                    $last_update = $this->get_last_update($id);
-                    $user['last_update'] = !empty($last_update) ? $last_update : NULL;
-                    $readers[] = $user;
-                }
+                $user['id'] = $id;
+                $user['name'] = $name;
+                //$last_update = $this->get_last_update($id);
+                $last_update = "00";
+                $user['last_update'] = !empty($last_update) ? $last_update : NULL;
+                $readers[] = $user;
             } 
         }
 
@@ -169,8 +166,11 @@ class Diary extends Blog {
         if (!$res->result>0) {
            foreach($res->posts as $post) {
               $entr = Array();
+              $entr['id'] = $post->postid;
               $entr['body'] = $post->message_html;
               $entr['title'] = $post->title;
+              $last_update = $post->comments_count_data;
+              $entr['comments_count'] = !empty($last_update) ? $last_update : 0;
               $entr['date'] = date('d.m.Y - H:m:s', $post->dateline_date);
 
               $entries[] = $entr;
@@ -178,6 +178,27 @@ class Diary extends Blog {
         }
 
         return $entries;
+    }
+
+
+    public function get_comments($postid) {
+        $post = Array();
+        $params = Array('postid' => $postid);
+        $res = $this->query('comment.get', $params);
+
+        $post['comments'] = Array();
+        if (!$res->result>0) {
+            foreach($res->comments as $comment) {
+                $comm = Array();
+                $comm['date'] = date('d.m.Y - H:m:s', $comment->dateline);
+                $comm['author'] = $comment->author_username;
+                $comm['author_id'] = $comment->author_userid;
+                $comm['avatar'] = $comment->author_avatar;
+                $comm['body'] = $comment->message_html;
+                $post['comments'][] = $comm;
+            }
+        }
+        return $post;
     }
 
 
